@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 47% 5%;
+    --foreground: 190 40% 96%;
+    --card: 222 42% 8%;
+    --card-foreground: 190 40% 96%;
+    --popover: 222 42% 8%;
+    --popover-foreground: 190 40% 96%;
+    --primary: 187 96% 53%;
+    --primary-foreground: 222 47% 5%;
+    --secondary: 292 84% 61%;
+    --secondary-foreground: 222 47% 5%;
+    --muted: 222 30% 14%;
+    --muted-foreground: 194 18% 68%;
+    --accent: 292 84% 61%;
+    --accent-foreground: 190 40% 96%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 190 40% 96%;
+    --border: 190 40% 18%;
+    --input: 190 40% 18%;
+    --ring: 187 96% 53%;
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    background:
+      linear-gradient(120deg, rgba(34, 211, 238, 0.08), transparent 28%),
+      linear-gradient(300deg, rgba(217, 70, 239, 0.08), transparent 30%),
+      hsl(var(--background));
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+}
+
+@layer utilities {
+  .tech-grid {
+    background-image:
+      linear-gradient(rgba(34, 211, 238, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(217, 70, 239, 0.06) 1px, transparent 1px);
+    background-size: 36px 36px;
+  }
+
+  .panel-border {
+    border: 1px solid rgba(103, 232, 249, 0.18);
+  }
+}
