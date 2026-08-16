@@ -1,3 +1,5 @@
+// lib/api-client.ts
+
 export type BackendHealth = {
   status?: string;
   service?: string;
@@ -17,44 +19,31 @@ export type BackendOverview = {
   raw?: unknown;
 };
 
-const PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_RAILWAY_BACKEND_URL;
-const SERVER_BACKEND_URL = process.env.RAILWAY_BACKEND_URL;
-
-function joinUrl(base: string, path: string) {
-  return `${base.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
-}
-
-async function requestJson<T>(url: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(url, {
-    ...init,
-    headers: {
-      "content-type": "application/json",
-      ...init?.headers
-    },
+/**
+ * Appelle toujours la route Next.js /api/backend
+ * pour éviter d'exposer la clé API et garantir
+ * que Railway reçoit bien x-api-key côté serveur.
+ */
+async function backendProxy<T>(path: string): Promise<T> {
+  const res = await fetch(`/api/backend?path=${encodeURIComponent(path)}`, {
+    method: "GET",
     cache: "no-store"
   });
 
-  if (!response.ok) {
-    throw new Error(`Backend request failed: ${response.status} ${response.statusText}`);
+  if (!res.ok) {
+    throw new Error(`Backend request failed: ${res.status} ${res.statusText}`);
   }
 
-  return response.json() as Promise<T>;
+  return res.json() as Promise<T>;
 }
 
-export async function backendRequest<T>(path: string, init?: RequestInit): Promise<T> {
-  const directBaseUrl =
-    typeof window === "undefined" ? SERVER_BACKEND_URL || PUBLIC_BACKEND_URL : PUBLIC_BACKEND_URL;
-
-  if (directBaseUrl) {
-    return requestJson<T>(joinUrl(directBaseUrl, path), init);
-  }
-
-  return requestJson<T>(`/api/backend?path=${encodeURIComponent(path)}`, init);
-}
-
+/**
+ * Récupère l'état du backend Railway via la route proxy.
+ */
 export async function getBackendOverview(): Promise<BackendOverview> {
   try {
-    const health = await backendRequest<BackendHealth>("/health");
+    const health = await backendProxy<BackendHealth>("/health");
+
     return {
       health,
       metrics: [
