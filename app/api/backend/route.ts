@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const BACKEND_URL = process.env.RAILWAY_BACKEND_URL || process.env.NEXT_PUBLIC_RAILWAY_BACKEND_URL;
+const BACKEND_URL = process.env.RAILWAY_BACKEND_URL;
 
 function buildTargetUrl(request: Request) {
   if (!BACKEND_URL) {

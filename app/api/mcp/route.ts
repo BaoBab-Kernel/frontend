@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const MCP_HTTP_URL = process.env.MCP_HTTP_URL || process.env.NEXT_PUBLIC_MCP_HTTP_URL;
+const MCP_HTTP_URL = process.env.MCP_HTTP_URL;
 
 function buildTargetUrl(request: Request) {
   if (!MCP_HTTP_URL) {
