@@ -1,5 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { DashboardPanel } from "@/components/dashboard-panel";
+
 
 export default async function DashboardPage() {
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;

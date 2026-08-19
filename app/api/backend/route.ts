@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 const BACKEND_URL = process.env.RAILWAY_BACKEND_URL;
+const API_KEY = process.env.PROPYLEE_API_KEY;
 
 function buildTargetUrl(request: Request) {
   if (!BACKEND_URL) {
@@ -10,27 +11,34 @@ function buildTargetUrl(request: Request) {
   const requestUrl = new URL(request.url);
   const path = requestUrl.searchParams.get("path") ?? "/";
   const target = new URL(path.replace(/^\//, ""), `${BACKEND_URL.replace(/\/$/, "")}/`);
+
   requestUrl.searchParams.forEach((value, key) => {
     if (key !== "path") {
       target.searchParams.set(key, value);
     }
   });
+
   return target;
 }
 
 async function proxy(request: Request) {
   try {
     const target = buildTargetUrl(request);
+
     const response = await fetch(target, {
       method: request.method,
       headers: {
-        "content-type": request.headers.get("content-type") ?? "application/json"
+        "content-type": request.headers.get("content-type") ?? "application/json",
+        "x-api-key": API_KEY ?? ""
       },
-      body: ["GET", "HEAD"].includes(request.method) ? undefined : await request.text(),
+      body: ["GET", "HEAD"].includes(request.method)
+        ? undefined
+        : await request.text(),
       cache: "no-store"
     });
 
     const text = await response.text();
+
     return new NextResponse(text, {
       status: response.status,
       headers: {
