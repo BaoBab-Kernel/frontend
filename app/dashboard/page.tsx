@@ -1,12 +1,22 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { getBackendOverview } from "@/lib/api-client";
-import { DashboardPanel } from "@/components/dashboard-panel";
 
 export default async function DashboardPage() {
+  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+
+  if (!BACKEND_URL) {
+    throw new Error("NEXT_PUBLIC_BACKEND_URL is not configured");
+  }
+
   const [session, overview] = await Promise.all([
     getServerSession(authOptions),
-    getBackendOverview()
+    fetch(`${BACKEND_URL}/api/status`, {
+      headers: {
+        "x-api-key": API_KEY ?? ""
+      },
+      cache: "no-store"
+    }).then(res => res.json())
   ]);
 
   return (
@@ -15,7 +25,7 @@ export default async function DashboardPage() {
         <p className="font-mono text-sm uppercase text-cyan-200">Railway backend</p>
         <h1 className="text-3xl font-semibold text-white">Dashboard</h1>
         <p className="text-muted-foreground">
-          Connecte en REST au backend Railway. Session active: {session?.user?.email ?? "invite"}.
+          Connecté en REST au backend Railway. Session active: {session?.user?.email ?? "invite"}.
         </p>
       </div>
       <DashboardPanel overview={overview} />
